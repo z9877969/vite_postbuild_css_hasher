@@ -1,0 +1,14 @@
+{
+  "name": "post-build",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "random-string-generator": "^1.0.7"
+  }
+}
