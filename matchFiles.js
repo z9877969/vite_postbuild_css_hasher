@@ -1,10 +1,9 @@
-import fs from 'fs/promises';
 import { BASE_PATH_KEY, ROOT_DIR } from './constants.js';
 import path from 'path';
 import { getFilesList, readFile } from './fs.js';
 import { FILES_CASH, PATH_CASH } from './cash.js';
 
-const findCssFile = (fileData) => {
+const findCssFile = fileData => {
   const cssRowRegex = /<link\s+[^>]*?href=["']([^"']*\.css)["'][^>]*?>/gi;
   const cssRow = fileData.match(cssRowRegex);
   if (!cssRow) return null;
@@ -13,13 +12,13 @@ const findCssFile = (fileData) => {
   return cssFileMatch && cssFileMatch[0] ? cssFileMatch[0] : null;
 };
 
-const findJsFile = (fileData) => {
+const findJsFile = fileData => {
   const jsRowRegex =
     /<script\s+type="module"[^>]*?src=["']([^"']*\.js)["'][^>]*?>/g;
   const jsRows = fileData.match(jsRowRegex);
   if (!jsRows) return null;
   const pathesList = jsRows
-    .map((row) => {
+    .map(row => {
       const matchData = row.match(/src=["']([^"']*\.js)["']/);
       if (!matchData) return null;
       let jsPath = matchData[1];
@@ -29,10 +28,10 @@ const findJsFile = (fileData) => {
       }
       return jsPath || null;
     })
-    .filter((jsPath) => {
+    .filter(jsPath => {
       return jsPath && !jsPath.includes('modulepreload');
     })
-    .map((jsPath) => path.join(ROOT_DIR, jsPath));
+    .map(jsPath => path.join(ROOT_DIR, jsPath));
 
   return pathesList.length ? pathesList : null;
 };

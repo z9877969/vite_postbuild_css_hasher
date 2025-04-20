@@ -4,6 +4,8 @@ import random from 'random-string-generator';
 import { CLASS_CASH } from './cash.js';
 import { readFile, writeFile } from './fs.js';
 
+const swiperClassList = ['swiper', 'swiper-wrapper', 'swiper-slide'];
+
 function generateHash(className) {
   return className + '_' + random('lowernumeric').slice(0, 5);
 }
@@ -27,7 +29,12 @@ export async function updateHTML(filePath, cssFileName) {
           CLASS_CASH[cssFileName] = {};
         }
         if (!CLASS_CASH[cssFileName][originalClass]) {
-          const hashedClass = generateHash(originalClass);
+          let hashedClass = '';
+          if (swiperClassList.includes(originalClass)) {
+            hashedClass = originalClass;
+          } else {
+            hashedClass = generateHash(originalClass);
+          }
           CLASS_CASH[cssFileName][originalClass] = hashedClass;
         }
         newClassesArray.push(CLASS_CASH[cssFileName][originalClass]);
