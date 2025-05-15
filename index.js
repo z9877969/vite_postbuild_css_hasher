@@ -28,7 +28,7 @@ const update = async () => {
         }
       }
     }
-    updateCss(cssFile);
+    await updateCss(cssFile);
   }
 };
 

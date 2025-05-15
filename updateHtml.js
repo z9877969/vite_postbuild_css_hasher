@@ -1,9 +1,9 @@
-import fs from 'fs/promises';
-import path from 'path';
 import random from 'random-string-generator';
 import { CLASS_CASH } from './cash.js';
 import { readFile, writeFile } from './fs.js';
 
+const accordeonClassPrfx = 'ac';
+const swiperClassPrefix = 'swiper';
 const swiperClassList = ['swiper', 'swiper-wrapper', 'swiper-slide'];
 
 function generateHash(className) {
@@ -30,7 +30,11 @@ export async function updateHTML(filePath, cssFileName) {
         }
         if (!CLASS_CASH[cssFileName][originalClass]) {
           let hashedClass = '';
-          if (swiperClassList.includes(originalClass)) {
+          if (
+            swiperClassList.includes(originalClass) ||
+            originalClass.includes(swiperClassPrefix) ||
+            originalClass.startsWith(accordeonClassPrfx)
+          ) {
             hashedClass = originalClass;
           } else {
             hashedClass = generateHash(originalClass);

@@ -3,13 +3,16 @@ import path from 'path';
 import { getFilesList, readFile } from './fs.js';
 import { FILES_CASH, PATH_CASH } from './cash.js';
 
+const cssFileRegex = /[\w-]+\.css/g;
+const cssRowRegex =
+  /<link\s+[^>]*?href=["'](?!https?:\/\/)([^"']*(styles)?[\w-]*\.css)["'][^>]*?>/gi;
+
 const findCssFile = fileData => {
-  const cssRowRegex = /<link\s+[^>]*?href=["']([^"']*\.css)["'][^>]*?>/gi;
-  const cssRow = fileData.match(cssRowRegex);
-  if (!cssRow) return null;
-  const cssFileRegex = /[\w-]+\.css/;
-  const cssFileMatch = cssRow[0].match(cssFileRegex);
-  return cssFileMatch && cssFileMatch[0] ? cssFileMatch[0] : null;
+  const cssRows = fileData.match(cssRowRegex);
+  if (!cssRows) return null;
+  // const cssFileMatch = cssRow[0].match(cssFileRegex);
+  const cssFileMatch = cssRows.map(row => row.match(cssFileRegex));
+  return cssFileMatch.length ? cssFileMatch.map(([row]) => row) : null;
 };
 
 const findJsFile = fileData => {
@@ -41,8 +44,10 @@ export const matchFiles = async () => {
   for await (const file of htmlFiles) {
     const filePath = path.join(ROOT_DIR, file);
     const fileData = await readFile(filePath);
-    const cssFile = findCssFile(fileData);
+    let cssFile = findCssFile(fileData);
     if (cssFile) {
+      cssFile = cssFile.filter(file => !file.includes('vendor'));
+      cssFile = cssFile[0];
       if (!FILES_CASH[cssFile]) {
         FILES_CASH[cssFile] = [];
       }

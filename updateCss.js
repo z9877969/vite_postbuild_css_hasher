@@ -5,8 +5,6 @@ import { CLASS_CASH } from './cash.js';
 
 const getHashedCss = async (cssFile, cssContent) => {
   try {
-    // const classRegex = /(?<![:\w-])\.([\w-]+)(?=[^{,:.\s]*[{,:\s]|$)/g;
-    // const classRegex = /(?<![:\w-])\.([\w-]+(\.\w-)*)(?=[^{,:.\s]*([{,:\s]|$|\.[\w-]))/g;
     const classRegex = /(?<!:)\.([a-zA-Z_-][a-zA-Z0-9_-]*)/g;
 
     let match;
@@ -18,9 +16,7 @@ const getHashedCss = async (cssFile, cssContent) => {
       const hashedClassName = CLASS_CASH[cssFile][originalClassName];
 
       if (hashedClassName) {
-        const startCuttingStr = cssContent.substring(0, [
-          matchPosition + 1,
-        ]);
+        const startCuttingStr = cssContent.substring(0, [matchPosition + 1]);
         const endCuttingClass = cssContent.substring(
           [matchPosition + 1 + matchLength],
           cssContent.length
@@ -32,17 +28,14 @@ const getHashedCss = async (cssFile, cssContent) => {
     console.log(`Updated class names: ${cssFile}`);
     return cssContent;
   } catch (error) {
-    console.error(
-      `Error updating class names of the file  ${cssFile}:`,
-      error
-    );
+    console.error(`Error updating class names of the file  ${cssFile}:`, error);
   }
-}
+};
 
 export const updateCss = async cssFile => {
+  if (cssFile.includes('vendor')) return;
   const cssPath = path.resolve(ROOT_DIR, 'assets', cssFile);
   const fileData = await readFile(cssPath);
   const updatedFileData = await getHashedCss(cssFile, fileData);
   await writeFile(cssPath, updatedFileData);
 };
-
