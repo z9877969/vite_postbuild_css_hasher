@@ -32,8 +32,8 @@ const getHashedCss = async (cssFile, cssContent) => {
   }
 };
 
-export const updateCss = async cssFile => {
-  if (cssFile.includes('vendor')) return;
+export const updateCss = async (cssFile) => {
+  if (cssFile.includes('vendor') || cssFile.includes('index')) return;
   const cssPath = path.resolve(ROOT_DIR, 'assets', cssFile);
   const fileData = await readFile(cssPath);
   const updatedFileData = await getHashedCss(cssFile, fileData);

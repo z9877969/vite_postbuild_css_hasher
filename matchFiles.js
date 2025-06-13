@@ -7,21 +7,21 @@ const cssFileRegex = /[\w-]+\.css/g;
 const cssRowRegex =
   /<link\s+[^>]*?href=["'](?!https?:\/\/)([^"']*(styles)?[\w-]*\.css)["'][^>]*?>/gi;
 
-const findCssFile = fileData => {
+const findCssFile = (fileData) => {
   const cssRows = fileData.match(cssRowRegex);
   if (!cssRows) return null;
   // const cssFileMatch = cssRow[0].match(cssFileRegex);
-  const cssFileMatch = cssRows.map(row => row.match(cssFileRegex));
+  const cssFileMatch = cssRows.map((row) => row.match(cssFileRegex));
   return cssFileMatch.length ? cssFileMatch.map(([row]) => row) : null;
 };
 
-const findJsFile = fileData => {
+const findJsFile = (fileData) => {
   const jsRowRegex =
     /<script\s+type="module"[^>]*?src=["']([^"']*\.js)["'][^>]*?>/g;
   const jsRows = fileData.match(jsRowRegex);
   if (!jsRows) return null;
   const pathesList = jsRows
-    .map(row => {
+    .map((row) => {
       const matchData = row.match(/src=["']([^"']*\.js)["']/);
       if (!matchData) return null;
       let jsPath = matchData[1];
@@ -31,10 +31,10 @@ const findJsFile = fileData => {
       }
       return jsPath || null;
     })
-    .filter(jsPath => {
+    .filter((jsPath) => {
       return jsPath && !jsPath.includes('modulepreload');
     })
-    .map(jsPath => path.join(ROOT_DIR, jsPath));
+    .map((jsPath) => path.join(ROOT_DIR, jsPath));
 
   return pathesList.length ? pathesList : null;
 };
@@ -46,7 +46,9 @@ export const matchFiles = async () => {
     const fileData = await readFile(filePath);
     let cssFile = findCssFile(fileData);
     if (cssFile) {
-      cssFile = cssFile.filter(file => !file.includes('vendor'));
+      cssFile = cssFile.filter(
+        (file) => !file.includes('vendor') && !file.includes('index')
+      );
       cssFile = cssFile[0];
       if (!FILES_CASH[cssFile]) {
         FILES_CASH[cssFile] = [];
