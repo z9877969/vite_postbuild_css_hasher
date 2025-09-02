@@ -2,9 +2,22 @@ import random from 'random-string-generator';
 import { CLASS_CASH } from './cash.js';
 import { readFile, writeFile } from './fs.js';
 
-const accordeonClassPrfx = 'ac';
-const swiperClassPrefix = 'swiper';
-const swiperClassList = ['swiper', 'swiper-wrapper', 'swiper-slide'];
+const classNameInclusion = ['swiper', 'swiper-wrapper', 'swiper-slide'];
+const classNamePrefixes = [
+  'ac' /* accordeon */,
+  'swiper' /* swiper */,
+  'js-' /* all class in js files */,
+];
+
+const checkOriginalClassExclusionToHash = (originalClass) => {
+  const isIncludeOriginalClass = classNameInclusion.some((inclusion) =>
+    originalClass.includes(inclusion)
+  );
+  const isStartWithPrefix = classNamePrefixes.some((prefix) =>
+    originalClass.startsWith(prefix)
+  );
+  return isIncludeOriginalClass || isStartWithPrefix;
+};
 
 function generateHash(className) {
   return className + '_' + random('lowernumeric').slice(0, 5);
@@ -30,10 +43,13 @@ export async function updateHTML(filePath, cssFileName) {
         }
         if (!CLASS_CASH[cssFileName][originalClass]) {
           let hashedClass = '';
+          const isClassNameExcludesToHashing =
+            checkOriginalClassExclusionToHash(originalClass);
           if (
-            swiperClassList.includes(originalClass) ||
+            /* classNameInclusion.includes(originalClass) ||
             originalClass.includes(swiperClassPrefix) ||
-            originalClass.startsWith(accordeonClassPrfx)
+            originalClass.startsWith(accordeonClassPrfx) */
+            isClassNameExcludesToHashing
           ) {
             hashedClass = originalClass;
           } else {
